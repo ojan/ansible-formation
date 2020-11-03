@@ -1,0 +1,14 @@
+Host bastion
+  Hostname 127.0.0.1
+  User ansible
+  IdentityFile ./env/ssh/keys/id_ed25519
+  PasswordAuthentication no
+  Port 2002
+  ForwardAgent yes
+  ServerAliveInterval 60
+  TCPKeepAlive yes
+  ControlMaster auto
+  ControlPath ./env/ssh/sockets/ansible-%r@%h:%p
+  ControlPersist 15m
+  ProxyCommand none
+  #LogLevel QUIET
