@@ -1,0 +1,31 @@
+---
+- name: init a new ansible controlled project
+  hosts: localhost
+  connection: local
+  collections:
+    - ansible.builtin
+  gather_facts: no
+  become: no
+  vars:
+    project_root_dir: "{{ lookup('env', 'PWD') }}"
+    project_inventory_path: "env/static-inventory.yml"
+    project_tmp_dir: "/tmp"
+    project_ssh_user_key_file: ubuntu_ed25519
+    project_ssh_key_path: "env/ssh/keys"
+  tasks:
+
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/stat_module.html
+    - stat:
+        path: "{{ project_root_dir }}/{{ project_ssh_key_path }}/{{ project_ssh_user_key_file }}"
+      register: p
+
+    - name: debug | project root dir
+      debug:
+        msg: "{{ project_root_dir }} {{ ansible_user }}"
+
+    - debug:
+        msg: "{{ p.stat }}"
+      
+    - debug:
+        msg: "{{ p.stat.isreg }} {{ ansible_user }}"
+      when: p.stat.isreg is defined

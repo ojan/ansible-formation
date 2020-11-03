@@ -1,0 +1,69 @@
+---
+- name: init a new build image factory
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  become: no
+  tasks:
+
+    - stat:
+        path: "{{ project_root_dir }}/{{ project_ssh_key_path }}/{{ project_ssh_key_file }}"
+      register: p
+      
+    - debug:
+        msg: "{{ p.stat.isreg }} {{ ansible_user }}"
+      when: p.stat.isreg is defined
+
+    - name: create ssh keys for build
+      block:
+
+        - name: debug | stat
+          debug:
+            msg: "{{ p }}"
+          
+
+        - name: file | '{{ project_root_dir }}/env/ssh/keys' directory should be present
+          file:
+            path: "{{ project_root_dir }}/env/{{ item }}"
+            state: directory
+          loop:
+            - ssh
+            - ssh/keys
+            - ssh/sockets
+          delegate_to: localhost
+
+        - name: debug | factory root dir
+          debug:
+            msg: "{{ project_root_dir }}"
+
+        - name: openssh_keypair | '{{ project_root_dir }}/{{ project_ssh_key_path }}/{{ project_ssh_key_file }}' should be present
+          openssh_keypair:
+            path: "{{ project_root_dir }}/{{ project_ssh_key_path }}/{{ project_ssh_key_file }}"
+            owner: "{{ ansible_user }}"
+            state: present
+            comment: ""
+            type: rsa
+            size: 2048
+            mode: 0600
+
+
+        - name: openssh_keypair | '{{ project_root_dir }}/{{ project_ssh_key_path }}/{{ project_ssh_user_key_file }}' should be present
+          openssh_keypair:
+            path: "{{ project_root_dir }}/{{ project_ssh_key_path }}/{{ project_ssh_user_key_file }}"
+            owner: "{{ ansible_user }}"
+            state: present
+            comment: ""
+            type: ed25519
+            mode: 0600
+        
+        - name: shell | community roles should be present
+          shell: ansible-galaxy install -r {{ project_root_dir }}/env/requirements.yml
+
+      when: p.stat.isreg is not defined
+
+# lxc remote add --protocol simplestreams ubuntu-minimal https://cloud-images.ubuntu.com/minimal/releases/
+
+# check permissions on ssh keys in project_ssh_key_path
+
+# installer une venv python3 et ansible + modules 
+#  pip3 install --upgrade ansible mkdocs boto3 molecule jmespath boto3 "ara[server]"
