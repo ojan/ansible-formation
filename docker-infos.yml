@@ -1,0 +1,47 @@
+---
+- name: install docker daemon
+  hosts: localhost
+  connection: local
+  collections:
+    - ansible.builtin
+    - community.docker
+  gather_facts: no
+  become: no
+  vars:
+    project_root_dir: "{{ lookup('env', 'PWD') }}"
+    project_inventory_path: "env/hosts/minimal.yml"
+    project_tmp_dir: "/tmp"
+    project_ssh_user_key_file: ubuntu_ed25519
+    project_ssh_key_path: "env/ssh/keys"
+    container_name: ansible_container
+  tasks:
+
+    - name: Inspect a single image
+      community.docker.docker_image_info:
+        name: ubuntu:20.04
+      register: img_info
+
+    - debug:
+        msg: "{{ img_info.images }}"
+
+    - name: Get infos on network
+      community.docker.docker_network_info:
+        name: bridge
+      register: net_info
+
+    - name: Does network exist?
+      ansible.builtin.debug:
+        msg: "The network {{ 'exists' if net_info.exists else 'does not exist' }}"
+
+    - name: Print information about network
+      ansible.builtin.debug:
+        var: net_info.network
+      when: net_info.exists
+
+    - name: Get info on docker host and list images
+      community.docker.docker_host_info:
+        images: yes
+      register: docker_info
+
+    - ansible.builtin.debug:
+        var: docker_info

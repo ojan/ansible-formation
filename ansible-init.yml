@@ -35,11 +35,10 @@
 
         
     # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html#ansible-collections-ansible-builtin-template-module
-    # - name: ansible.cfg file should be present
-    #   template:
-    #     src: "templates/ansible.cfg.j2"
-    #     dest: "/home/ansible/formation/ansible.cfg"
-      #delegate_to: localhost
+    - name: ansible.cfg file should be present
+      ansible.builtin.template:
+        src: "{{ project_root_dir }}/templates/ansible.cfg.j2"
+        dest: "/home/ansible/formation/ansible.cfg"
     
     # # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/stat_module.html
     # - stat:

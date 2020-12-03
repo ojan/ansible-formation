@@ -1,0 +1,55 @@
+---
+- name: install docker daemon
+  hosts: localhost
+  connection: local
+  collections:
+    - ansible.builtin
+    - community.docker
+  gather_facts: no
+  become: no
+  vars:
+    project_root_dir: "{{ lookup('env', 'PWD') }}"
+    project_inventory_path: "env/hosts/minimal.yml"
+    project_tmp_dir: "/tmp"
+    project_ssh_user_key_file: ubuntu_ed25519
+    project_ssh_key_path: "env/ssh/keys"
+    container_name: ansible_container
+  tasks:
+
+  - name: Container started
+    community.docker.docker_container:
+      name: "{{ container_name }}"
+      state: started
+      image: ubuntu:20.04
+      command: sleep infinity
+      container_default_behavior: no_defaults
+
+  # - name: Remove container
+  #   community.docker.docker_container:
+  #     name: "{{ container_name }}"
+  #     state: absent
+  #     force_kill: yes
+  #     container_default_behavior: no_defaults
+
+  - name: Container started
+    community.docker.docker_container:
+      name: "{{ item }}"
+      state: started
+      image: ubuntu:20.04
+      command: sleep infinity
+      container_default_behavior: no_defaults
+    loop:
+      - ansible_1
+      - ansible_2
+      - ansible_3
+
+  - name: Remove container
+    community.docker.docker_container:
+      name: "{{ item }}"
+      state: absent
+      force_kill: yes
+      container_default_behavior: no_defaults
+    loop:
+      - ansible_1
+      - ansible_2
+      - ansible_3

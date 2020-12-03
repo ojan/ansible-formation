@@ -1,0 +1,48 @@
+---
+- name: install docker daemon
+  hosts: localhost
+  connection: local
+  collections:
+    - ansible.builtin
+  gather_facts: yes
+  become: yes
+  vars:
+    project_root_dir: "{{ lookup('env', 'PWD') }}"
+    project_inventory_path: "env/hosts/minimal.yml"
+    project_tmp_dir: "/tmp"
+    project_ssh_user_key_file: ubuntu_ed25519
+    project_ssh_key_path: "env/ssh/keys"
+  tasks:
+
+    - name: Install apt packages
+      apt:
+        update_cache: yes
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+        state: present
+        
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker apt repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release | lower }} stable
+        state: present
+      
+    - name: Install docker
+      apt:
+        update_cache: yes
+        name: docker-ce
+        state: present
+
+    - name: add ansible user to docker group 
+      user:
+        name: ansible
+        groups: docker
+        append: yes

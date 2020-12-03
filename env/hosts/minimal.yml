@@ -6,3 +6,4 @@ all:
         localhost:
       vars:
         ansible_version: latest
+        ansible_python_interpreter: /home/ansible/.ansible/latest/bin/python
