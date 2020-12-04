@@ -1,0 +1,21 @@
+---
+- name: install docker daemon
+  hosts: localhost
+  connection: local
+  collections:
+    - ansible.builtin
+    - community.docker
+  gather_facts: no
+  become: no
+  vars:
+    # project_root_dir: "{{ lookup('env', 'PWD') }}"
+    # project_inventory_path: "env/hosts/minimal.yml"
+    # project_tmp_dir: "/tmp"
+    # project_ssh_user_key_file: ubuntu_ed25519
+    # project_ssh_key_path: "env/ssh/keys"
+    #container_name: ansible_container_1
+  tasks:
+    - name: play docker-mco role
+      import_role:
+        name: docker-mco
+        tasks_from: start

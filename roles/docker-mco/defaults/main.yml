@@ -1,0 +1,4 @@
+---
+# defaults file for docker-mco
+container_image: ubuntu:20.04
+container_name: ansible_container

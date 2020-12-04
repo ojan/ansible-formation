@@ -1,0 +1,10 @@
+---
+# tasks file for docker-mco
+- name: Container started
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    state: started
+    image: "{{ container_image }}"
+    command: sleep infinity
+    container_default_behavior: no_defaults
+
